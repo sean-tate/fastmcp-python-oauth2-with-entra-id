@@ -13,7 +13,7 @@ from auth.entraid_oauth_provider import EntraIDOAuthProvider
 from fastmcp import FastMCP
 import logging
 
-from azure_user_info_utility import EntraUserInfo
+from tools.azure_user_info_utility import EntraUserInfo
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger()
