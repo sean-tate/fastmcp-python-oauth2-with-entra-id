@@ -34,19 +34,20 @@ AUTH_CLIENT_SECRET=your-client-secret
 
 1. **Install dependencies:**
    ```bash
-   pip install -r requirements.txt
+   pip install uv
+   uv sync
    ```
 
 2. **Start the MCP Server:**
    From the project root, run:
    ```bash
-    python azure_user_mcp_server.py
+    uv run azure_user_mcp_server.py
    ```
 
 3. **Run the OAuth2 Console Client:**
    In a new terminal, from the project root, run:
    ```bash
-    python simple_oauth_client_example.py
+     uv run simple_oauth_client_example.py
    ```
    The client will:
    - Attempt to access the protected resource (expecting 401)
@@ -66,8 +67,7 @@ MCP Inspector is a graphical tool for interacting with MCP servers.
   1. Launch MCP Inspector after installation.
   2. Connect to the MCP server at the appropriate URL (e.g., `http://localhost:8000`). 
 
-  ![MCP Inspector Bearer Token](./images/mcp_inspector_bearer_token.png) 
-  
+ 
 
 This allows you to interact with the secured MCP server using the graphical interface, authenticated with a valid OAuth2 token.
 
