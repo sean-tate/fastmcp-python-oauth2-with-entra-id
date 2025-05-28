@@ -1,7 +1,16 @@
-
 # MCP Server Authorization Example (OAuth2 + Entra ID)
 
-This demonstration shows how to secure an MCP server using the [MCP Authorization specification](https://modelcontextprotocol.io/specification/2025-03-26/basic/authorization) with Entra ID as a third party authorization server. This example includes an implementation of `OAuthAuthorizationServerProvider` from the [MCP Python SDK](https://github.com/modelcontextprotocol/python-sdk) tailored for Microsoft Entra ID. 
+This demonstration shows how to secure an MCP server using the [MCP Authorization specification](https://modelcontextprotocol.io/specification/2025-03-26/basic/authorization) with Entra ID as a third party authorization server. This example includes an implementation of `OAuthAuthorizationServerProvider` from the [MCP Python SDK](https://github.com/modelcontextprotocol/python-sdk) tailored for Microsoft Entra ID.
+
+## Server Functionality
+
+The MCP server provides a demonstration tool called `get_user_name` that showcases how authenticated user information can be accessed within MCP tools. This tool:
+
+- **Requires Authentication:** The tool can only be invoked after successful OAuth2 authentication with Entra ID
+- **Returns User Information:** Provides the user's display name as obtained from their Entra ID profile
+- **Demonstrates Authorization Flow:** Shows how the MCP Authorization specification enables secure access to user-specific data
+
+This simple tool demonstrates the complete OAuth2 flow from authentication through to accessing protected resources with user context.
 
 > This is solution is for demonstration purposes only and is not suitable for production use cases. In some cases, code comments highlight areas that require attention.
 
@@ -56,6 +65,8 @@ AUTH_CLIENT_SECRET=your-client-secret
    - Handle the callback and exchange the code for a token
    - Connect to the server and allow the user to interact with the MCP server via common functions suchs as listining available tools and invoking a tool.
 
+   ![Secured Auth using Console Client](./assets/mcp_server_auth_entra_id_console.gif)
+
 ## Using MCP Inspector to Access the MCP Server
 
 MCP Inspector is a graphical tool for interacting with MCP servers.
@@ -65,11 +76,11 @@ MCP Inspector is a graphical tool for interacting with MCP servers.
 
 - **Authentication:**
   1. Launch MCP Inspector after installation.
-  2. Connect to the MCP server at the appropriate URL (e.g., `http://localhost:8000`). 
+  2. Connect to the MCP server at the appropriate URL (e.g., `http://localhost:8000/sse`). 
 
- 
+  This allows you to interact with the secured MCP server using the graphical interface, authenticated with a valid OAuth2 token.
 
-This allows you to interact with the secured MCP server using the graphical interface, authenticated with a valid OAuth2 token.
+     ![Secured Auth using MCP Inspector](./assets/mcp_server_auth_entra_id_inspecter.gif)
 
 ## Notes
 
