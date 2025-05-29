@@ -80,7 +80,7 @@ MCP Inspector is a graphical tool for interacting with MCP servers.
 
   This allows you to interact with the secured MCP server using the graphical interface, authenticated with a valid OAuth2 token.
 
-     ![Secured Auth using MCP Inspector](./assets/mcp_server_auth_entra_id_inspecter.gif)
+     ![Secured Auth using MCP Inspector](./assets/mcp_server_auth_entra_id_inspector.gif)
 
 ## Notes
 
