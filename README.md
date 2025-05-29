@@ -12,7 +12,7 @@ The MCP server provides a demonstration tool called `get_user_name` that showcas
 
 This simple tool demonstrates the complete OAuth2 flow from authentication through to accessing protected resources with user context.
 
-> This is solution is for demonstration purposes only and is not suitable for production use cases. In some cases, code comments highlight areas that require attention.
+> This solution is for demonstration purposes only and is not suitable for production use cases. In some cases, code comments highlight areas that require attention.
 
 ## Components
 
@@ -63,7 +63,7 @@ AUTH_CLIENT_SECRET=your-client-secret
    - Initiate the OAuth2 Authorization Code flow
    - Print the authorization URL to the console (open in browser to authenticate)
    - Handle the callback and exchange the code for a token
-   - Connect to the server and allow the user to interact with the MCP server via common functions suchs as listining available tools and invoking a tool.
+   - Connect to the server and allow the user to interact with the MCP server via common functions such as listing available tools and invoking a tool.
 
    ![Secured Auth using Console Client](./assets/mcp_server_auth_entra_id_console.gif)
 
