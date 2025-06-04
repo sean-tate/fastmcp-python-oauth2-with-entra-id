@@ -80,8 +80,8 @@ class HashSignatureUtility:
         :param hash_to_verify: Hash string to verify against
         :return: True if the dictionary generates the same hash, False otherwise
         """
-        # Generate hash from the provided dictionary
-        computed_hash = self.generate_hash(data_dict)
+        # Generate hash from the provided dictionary        
+        computed_hash = self.generate_hash(data_dict)        
         
         # Compare the computed hash with the provided hash
         return computed_hash == hash_to_verify
@@ -115,7 +115,7 @@ class ConsentCookieGenerator:
         self.scopes = scopes
         self.authorization_code = authorization_code
         self.state = state
-        self.cookie_max_age = cookie_max_age,
+        self.cookie_max_age = cookie_max_age
         self.hashing_util = HashSignatureUtility(auth_key)
 
     def generate_cookie(self) -> str:
@@ -131,6 +131,7 @@ class ConsentCookieGenerator:
             "scopes": self.scopes,
             "expires_on": self.cookie_max_age
         }
+        
         signature = self.hashing_util.generate_hash(consent_data)
         consent_data['signature'] = signature
         # Convert to JSON and encode as base64
@@ -179,7 +180,7 @@ class ConsentCookieReader:
             consent_json = decoded_bytes.decode('utf-8')
             
             # Parse JSON to get dictionary
-            consent_data = json.loads(consent_json)
+            consent_data = json.loads(consent_json)            
             return consent_data
         except Exception as e:
             # Return empty dict if parsing fails
@@ -199,20 +200,19 @@ class ConsentCookieReader:
         # Check if required fields exist
         required_fields = ['application_id', 'redirect_uri', 'scopes', 'expires_on', 'signature']
                          
-        if not all(field in consent_data for field in required_fields):
+        if not all(field in consent_data for field in required_fields):            
             return False
         
         # Verify the signature
         hashing_util = HashSignatureUtility(auth_key)
         consent_data_copy = consent_data.copy()
         consent_data_copy.pop('signature', None)
-        if not hashing_util.verify_hash(consent_data_copy, consent_data['signature']):
+        if not hashing_util.verify_hash(consent_data_copy, consent_data['signature']):            
             return False
             
         # Check if expired
-        current_time = int(time.time())
-        expires_on = consent_data.get('expires_on', 0)
-        
+        current_time = int(time.time())        
+        expires_on = consent_data.get('expires_on', 0)                      
         return current_time < expires_on
     
     @classmethod
@@ -227,12 +227,12 @@ class ConsentCookieReader:
         cookie_name = cookie_name or cls.CONSENT_COOKIE_NAME
         cookies = cls.extract_cookies(headers)
         
-        if cookie_name not in cookies:
+        if cookie_name not in cookies:            
             return {}
             
         consent_data = cls.parse_consent_cookie(cookies[cookie_name])
         
-        if not cls.is_consent_cookie_valid(consent_data, auth_key=auth_key):
+        if not cls.is_consent_cookie_valid(consent_data, auth_key=auth_key):            
             return {}
             
         return consent_data

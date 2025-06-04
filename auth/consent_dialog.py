@@ -1,4 +1,5 @@
 import os
+import re
 import time
 
 from auth.auth_utilities import ConsentCookieGenerator, ConsentCookieReader, HashSignatureUtility
@@ -13,7 +14,8 @@ class ConsentDialog:
                 application_name: str,
                 application_website: str,
                 application_id: str,
-                redirect_uri: str,
+                server_redirect_uri: str,
+                client_redirect_uri: str,
                 scopes: str,
                 authorization_code: str,
                 state: str,
@@ -34,7 +36,8 @@ class ConsentDialog:
         self.application_name = application_name
         self.application_website = application_website
         self.application_id = application_id
-        self.redirect_uri = redirect_uri
+        self.server_redirect_uri = server_redirect_uri
+        self.client_redirect_uri = client_redirect_uri
         self.scopes = scopes
         self.authorization_code = authorization_code
         self.state = state                
@@ -54,21 +57,13 @@ class ConsentDialog:
         try:
             with open(self.template_path, "r") as file:
                 template = file.read()
-                
-            # Replace all tokens
-            html_content = template.replace("{{MCP_SERVER_NAME}}", self.mcp_server_name)
-            html_content = html_content.replace("{{APPLICATION_NAME}}", self.application_name)
-            html_content = html_content.replace("{{APPLICATION_WEBSITE}}", self.application_website)
-            html_content = html_content.replace("{{APPLICATION_ID}}", self.application_id)
-            html_content = html_content.replace("{{REDIRECT_URI}}", self.redirect_uri)
-            html_content = html_content.replace("{{SCOPES}}", self.scopes)
-            html_content = html_content.replace("{{AUTHORIZATION_CODE}}", self.authorization_code)
-            html_content = html_content.replace("{{STATE}}", self.state)
 
+            # Generate the consent cookie
             max_age = (int(time.time()) + 2592000)   # Default to 30 days
+            
             cookie_generator = ConsentCookieGenerator(
                 application_id=self.application_id,
-                redirect_uri=self.redirect_uri,
+                redirect_uri=self.client_redirect_uri,
                 scopes=self.scopes,
                 authorization_code=self.authorization_code,
                 state=self.state,               
@@ -77,8 +72,25 @@ class ConsentDialog:
             )
 
             cookie_value = cookie_generator.generate_cookie()
-            html_content = html_content.replace("{{COOKIE_DATA}}", f"{ConsentCookieReader.CONSENT_COOKIE_NAME}={cookie_value}; path=/; max-age={max_age}") #expired in 30 days
-            
+            # Replace all tokens in a single pass
+            replacements = {
+                "{{MCP_SERVER_NAME}}": self.mcp_server_name,
+                "{{APPLICATION_NAME}}": self.application_name,
+                "{{APPLICATION_WEBSITE}}": self.application_website,
+                "{{APPLICATION_ID}}": self.application_id,
+                "{{CLIENT_REDIRECT_URI}}": self.client_redirect_uri,
+                "{{SERVER_REDIRECT_URI}}": self.server_redirect_uri,
+                "{{REDIRECT_URI}}": self.client_redirect_uri,
+                "{{SCOPES}}": self.scopes,
+                "{{AUTHORIZATION_CODE}}": self.authorization_code,
+                "{{STATE}}": self.state,
+                "{{COOKIE_DATA}}": f"{ConsentCookieReader.CONSENT_COOKIE_NAME}={cookie_value}; path=/; max-age={max_age}" #expires in 30 days
+            }
+
+            # Create regex pattern that matches any of the tokens
+            pattern = re.compile('|'.join(re.escape(key) for key in replacements.keys()))
+            # Replace all tokens in a single pass
+            html_content = pattern.sub(lambda match: replacements[match.group(0)], template)
             return html_content
             
         except FileNotFoundError:
@@ -97,23 +109,3 @@ class ConsentDialog:
         
         with open(output_path, "w") as file:
             file.write(html_content)
-
-
-# Example usage:
-if __name__ == "__main__":
-    consent = ConsentDialog(
-        mcp_server_name="Mini MCP Server",
-        application_name="claudeai",
-        application_id="85de8714-cfd3-40c6-bec0-130b588d280e",
-        redirect_uri="https://claude.ai/api/mcp/auth_callback",
-        scopes="User.Read",
-        authorization_code="AUTH_CODE_12345",
-        state="STATE_67890"
-    )
-    
-    # Get the HTML as a string
-    html = consent.generate_html()
-    print("HTML generated successfully!")
-    
-    # Or save to a file
-    # consent.save_html("output_consent_dialog.html")

@@ -15,7 +15,7 @@ class EntraIdAuthSettings(BaseSettings):
     auth_client_id: str 
     auth_client_secret: str = ""  # This should be set in the environment or .env file   
     auth_redirect_uri: str = "http://localhost:8000/auth/callback"  # This should be the redirect URI of your this MCP server  
-    auth_hash_key: str = secrets.token_hex(32)  # Randomly generated key for hashing, can be set in the environment or .env file  
+    auth_hash_key: str = secrets.token_hex(32)  #  WARNING: This should be set in the environment or .env file, otherwise it will generate a new key every time the server starts, which is not suitable for production use.   
     AUTH_VERSION: ClassVar[str] = "v2.0"    
     
     class Config:

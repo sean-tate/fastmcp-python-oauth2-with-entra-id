@@ -129,7 +129,7 @@
             
             <div class="info-row">
                 <div class="info-label">Redirect URI:</div>
-                <div class="info-value">{{REDIRECT_URI}}</div>
+                <div class="info-value">{{CLIENT_REDIRECT_URI}}</div>
             </div>
         </div>
         
@@ -154,7 +154,7 @@
             // Save cookie with consent information
             document.cookie = "{{COOKIE_DATA}}";            
             // Redirect to the specified URL when Allow is clicked
-            window.location.href = "{{REDIRECT_URI}}?code={{AUTHORIZATION_CODE}}&state={{STATE}}";
+            window.location.href = "{{SERVER_REDIRECT_URI}}?code={{AUTHORIZATION_CODE}}&state={{STATE}}";
         }
         
         function denyAccess() {
