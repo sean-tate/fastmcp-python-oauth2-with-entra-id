@@ -51,6 +51,22 @@ class EntraIDOAuthProvider(OAuthAuthorizationServerProvider[AuthorizationCode, R
     async def get_client(self, client_id: str) -> Optional[OAuthClientInformationFull]:
         logger.debug("EntraIDOAuthProvider.get_client called")
         return self.clients.get(client_id)
+    
+    # This method is not a part of the OAuthAuthorizationServerProvider OAuth2 flow
+    def get_client_info_from_state(self, state: str) -> dict[str, str]:
+        client_id = self.state_mapping.get(state, {}).get("client_id")
+        redirect_uri = self.state_mapping.get(state, {}).get("redirect_uri")
+        
+        if not client_id or not redirect_uri:
+            # Log the error and raise an exception
+            logger.error(f"Invalid state parameter: {state}, client_id: {client_id}, redirect_uri: {redirect_uri}")        
+            raise ValueError("Invalid state parameter")
+        
+        logger.debug(f"Client ID found for state {state}: {client_id}")        
+        return {
+            "client_id": client_id,
+            "redirect_uri": redirect_uri}
+            
 
     async def register_client(self, client_info: OAuthClientInformationFull) -> None:
         logger.debug("EntraIDOAuthProvider.register_client called")
@@ -159,6 +175,8 @@ class EntraIDOAuthProvider(OAuthAuthorizationServerProvider[AuthorizationCode, R
         # Remove from in-memory store (in production, revoke in DB or with Azure if possible)
         self.TOKEN_MAPPING.pop(token, None)
         self.ENTRAID_TOKENS.pop(token, None)
+
+      
 
     async def handle_callback(self, code: str, state: str):
         logger.debug("EntraIDOAuthProvider.handle_callback called")

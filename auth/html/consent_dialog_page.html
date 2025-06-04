@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Application Access Request</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f5f5f5;
+        }
+        
+        .dialog-container {
+            max-width: 570px;
+            width: 100%;
+            padding: 30px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background-color: white;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        h1 {
+            margin-top: 0;
+            color: #0078D4;
+            font-size: 24px;
+            font-weight: normal;
+        }
+        
+        p {
+            color: #333;
+            line-height: 1.6;
+            margin-bottom: 16px;
+        }
+        
+        .info-panel {
+            background-color: #f7f7f7;
+            border-radius: 6px;
+            padding: 16px 20px;
+            margin-bottom: 20px;
+        }
+        
+        .info-row {
+            display: flex;
+            margin: 8px 0;
+        }
+        
+        .info-label {
+            color: #0078D4;
+            font-weight: 500;
+            width: 160px;
+            flex-shrink: 0;
+        }
+        
+        .info-value {
+            color: #333;
+            word-break: break-all;
+        }
+        
+        .highlight {
+            color: #0078D4;
+            font-weight: 500;
+        }
+        
+        .button-container {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .btn {
+            padding: 8px 20px;
+            border: none;
+            border-radius: 4px;
+            font-weight: 500;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        
+        .btn-allow {
+            background-color: #0078D4;
+            color: white;
+        }
+        
+        .btn-deny {
+            background-color: #E74C3C;
+            color: white;
+        }
+        
+        .denied-message {
+            display: none;
+            text-align: center;
+            color: #E74C3C;
+            font-weight: bold;
+            margin-top: 20px;
+            padding: 15px;
+            border: 1px solid #E74C3C;
+            border-radius: 6px;
+            background-color: #FDEDEC;
+        }
+    </style>
+</head>
+<body>
+    <div class="dialog-container" id="consent-dialog">
+        <h1>Application Access Request</h1>
+        
+        <p>The following application is requesting access to <span class="highlight">{{MCP_SERVER_NAME}}</span>, which might include access to everything <span class="highlight">{{MCP_SERVER_NAME}}</span> has been and will be granted access to.</p>
+        
+        <div class="info-panel">
+            <div class="info-row">
+                <div class="info-label">Application Name:</div>
+                <div class="info-value">{{APPLICATION_NAME}}</div>
+            </div>
+            
+            <div class="info-row">
+                <div class="info-label">Application Website:</div>
+                <div class="info-value">{{APPLICATION_WEBSITE}}</div>
+            </div>
+            
+            <div class="info-row">
+                <div class="info-label">Application ID:</div>
+                <div class="info-value">{{APPLICATION_ID}}</div>
+            </div>
+            
+            <div class="info-row">
+                <div class="info-label">Redirect URI:</div>
+                <div class="info-value">{{REDIRECT_URI}}</div>
+            </div>
+        </div>
+        
+        <p>The application will have access to the following scopes, used by <span class="highlight">{{MCP_SERVER_NAME}}</span>:</p>
+        
+        <div class="info-panel">
+            <div class="info-value">{{SCOPES}}</div>
+        </div>
+        
+        <div class="button-container">
+            <button class="btn btn-allow" onclick="allowAccess()">Allow</button>
+            <button class="btn btn-deny" onclick="denyAccess()">Deny</button>
+        </div>
+        
+        <div class="denied-message" id="denied-message">
+            Access request has been denied. The application will not be granted access to {{MCP_SERVER_NAME}}.
+        </div>
+    </div>
+
+    <script>
+        function allowAccess() {
+            // Save cookie with consent information
+            document.cookie = "{{COOKIE_DATA}}";            
+            // Redirect to the specified URL when Allow is clicked
+            window.location.href = "{{REDIRECT_URI}}?code={{AUTHORIZATION_CODE}}&state={{STATE}}";
+        }
+        
+        function denyAccess() {
+            // Hide the consent dialog content
+            document.getElementById("consent-dialog").style.maxHeight = "none";
+            
+            // Show the denied message
+            document.getElementById("denied-message").style.display = "block";
+            
+            // Hide the buttons
+            document.querySelector(".button-container").style.display = "none";
+        }
+    </script>
+</body>
+</html>

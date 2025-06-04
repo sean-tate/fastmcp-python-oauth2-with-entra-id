@@ -1,11 +1,13 @@
 # Auth related imports
+from urllib.parse import urlparse
 from starlette.exceptions import HTTPException
 from starlette.requests import Request
-from starlette.responses import JSONResponse, RedirectResponse, Response
+from starlette.responses import JSONResponse, RedirectResponse, Response, HTMLResponse
 from mcp.server.auth.settings import  AuthSettings, ClientRegistrationOptions
 from mcp.server.auth.middleware.auth_context import get_access_token
 
-from auth.auth_utilities import Scope
+from auth.auth_utilities import ConsentCookieReader, HashSignatureUtility, Scope
+from auth.consent_dialog import ConsentDialog
 from auth.entraid_auth_settings import EntraIdAuthSettings
 from auth.entraid_oauth_provider import EntraIDOAuthProvider
 #end auth related imports
@@ -19,6 +21,7 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger()
 auth_settings = EntraIdAuthSettings()
 target_scope = Scope("user.read")
+hashing_util = HashSignatureUtility(auth_settings.auth_hash_key)
 entra_auth = EntraIDOAuthProvider(
     tenant_id=auth_settings.auth_tenant_id,
     client_id=auth_settings.auth_client_id,    
@@ -27,10 +30,41 @@ entra_auth = EntraIDOAuthProvider(
     scope=target_scope,    
 )
 
+
 mcp = FastMCP("azure_user_mcp_server", auth_server_provider=entra_auth, auth=AuthSettings(
          issuer_url="http://localhost:8000",
            client_registration_options=ClientRegistrationOptions(enabled=True)
             ))
+
+
+@mcp.custom_route("/auth/consent", methods=["GET"])
+async def consent_handler(request: Request) -> Response:
+    client_id = request.query_params.get("client_id")
+    code = request.query_params.get("code")
+    state = request.query_params.get("state")
+
+    if not client_id or not code or not state:
+        raise HTTPException(400, "Missing client_id, code, or state parameter")
+
+    client_metadata = await entra_auth.get_client(client_id)
+    redirect_uri = entra_auth.get_client_info_from_state(state).get("redirect_uri") 
+    
+    consent = ConsentDialog(
+        mcp_server_name=mcp.name,
+        application_name=client_metadata.client_name if client_metadata else "Unknown Application",
+        application_website=client_metadata.client_website if client_metadata else urlparse(redirect_uri).netloc,
+        application_id=client_id,
+        redirect_uri=redirect_uri,
+        scopes=target_scope.as_string(),
+        authorization_code=code,
+        state=state,
+        auth_key=auth_settings.auth_hash_key
+    )
+
+    return HTMLResponse(
+        content=consent.generate_html(),
+        media_type="text/html"
+    )
 
 
 @mcp.custom_route("/auth/callback", methods=["GET"])
@@ -42,10 +76,34 @@ async def callback_handler(request: Request) -> Response:
 
     if not code or not state:
         raise HTTPException(400, "Missing code or state parameter")
+
     try:
-        redirect_uri = await entra_auth.handle_callback(code, state)
-        print (f"Redirect URI: {redirect_uri}")
-        return RedirectResponse(status_code=302, url=redirect_uri)
+        #check for consent cookie
+        consent_coookie_data = ConsentCookieReader.get_consent_from_request(request.headers, 
+                                                     auth_key=auth_settings.auth_hash_key)
+        
+        is_valid_constent_cookie = False
+
+        if consent_coookie_data:
+            # Validate the consent cookie
+            client_metadata = entra_auth.get_client_info_from_state(state)
+            # Check if consent cookie contains the application ID, redirect URI, scopes, authorization code, and state and that they match the request parameters
+            is_valid_constent_cookie = (
+                consent_coookie_data.application_id == client_metadata.get("client_id") and
+                consent_coookie_data.redirect_uri == client_metadata.get("redirect_uri") and
+                consent_coookie_data.scopes == target_scope.as_string()                
+            )
+
+        if not is_valid_constent_cookie:
+            logger.info("Consent cookie not found, redirecting to consent page")
+            # Redirect to consent page
+            redirect_uri = f"/auth/consent?client_id={entra_auth.client_id}&code={code}&state={state}"
+            return RedirectResponse(status_code=302, url=redirect_uri)
+        else:
+            logger.info("Consent cookie found, proceeding with callback handling")
+            redirect_uri = await entra_auth.handle_callback(code, state)        
+            return RedirectResponse(status_code=302, url=redirect_uri)   
+         
     except HTTPException:
         raise
     except Exception as e:
