@@ -40,8 +40,8 @@ class ConsentDialog:
         self.client_redirect_uri = client_redirect_uri
         self.scopes = scopes
         self.authorization_code = authorization_code
-        self.state = state                
-        self.hashing_util = HashSignatureUtility(auth_key)
+        self.state = state
+        self.auth_key = auth_key                        
         
         # Get the template file path
         current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -59,19 +59,14 @@ class ConsentDialog:
                 template = file.read()
 
             # Generate the consent cookie
-            max_age = (int(time.time()) + 2592000)   # Default to 30 days
-            
-            cookie_generator = ConsentCookieGenerator(
+            max_age = (int(time.time()) + 2592000)   # Default to 30 days  
+            cookie_value = ConsentCookieGenerator.generate_cookie(
                 application_id=self.application_id,
                 redirect_uri=self.client_redirect_uri,
                 scopes=self.scopes,
-                authorization_code=self.authorization_code,
-                state=self.state,               
-                auth_key=self.hashing_util._key,
-                cookie_max_age=max_age
+                cookie_max_age=max_age,
+                auth_key=self.auth_key
             )
-
-            cookie_value = cookie_generator.generate_cookie()
             # Replace all tokens in a single pass
             replacements = {
                 "{{MCP_SERVER_NAME}}": self.mcp_server_name,

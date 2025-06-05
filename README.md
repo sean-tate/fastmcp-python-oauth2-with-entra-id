@@ -171,10 +171,12 @@ http://your-mcp-server.com/auth/authorize?response_type=code&client_id=malicious
 
 ### Protection Mechanism: Consent Screen
 
-To mitigate this threat, this implementation includes an **additional consent screen** that:
+To mitigate this threat, this implementation includes an **additional consent screen** during the intial MCP client authorization that:
 
 1. **Explicit User Consent:** Before any protected operations, users must review and explicitly consent to authorizing the MCP client.
 2. **Scope Limitation:** The consent screen clearly defines what resources and operations will be accessible
+
+> Subsequent authorizations by the same client will not require consent as long as a valid consent cookie is present.
 
 #### Cookie-Based Protection Implementation
 

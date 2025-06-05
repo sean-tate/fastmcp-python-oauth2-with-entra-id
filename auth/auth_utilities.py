@@ -93,15 +93,18 @@ class HashSignatureUtility:
 class ConsentCookieGenerator:
     """Class to generate a consent cookie."""
     
-    def __init__(self, application_id:str, 
-                 redirect_uri: str, 
-                 scopes: str, 
-                 authorization_code: str, 
-                 state: str, 
-                 cookie_max_age: int, 
-                 auth_key: str = None):
+    def __init__(self):
+        """Initialize the ConsentCookieGenerator."""
+        pass
+
+    @staticmethod
+    def generate_cookie(application_id: str, 
+                       redirect_uri: str, 
+                       scopes: str, 
+                       cookie_max_age: int, 
+                       auth_key: str = None) -> str:
         """
-        Initialize with parameters to generate a consent cookie.
+        Generate a consent cookie string.
         
         :param application_id: ID of the application
         :param redirect_uri: URI to redirect after consent
@@ -109,30 +112,19 @@ class ConsentCookieGenerator:
         :param authorization_code: Authorization code for OAuth flow
         :param state: State parameter for OAuth flow
         :param cookie_max_age: Max age of the cookie in seconds
-        """
-        self.application_id = application_id
-        self.redirect_uri = redirect_uri
-        self.scopes = scopes
-        self.authorization_code = authorization_code
-        self.state = state
-        self.cookie_max_age = cookie_max_age
-        self.hashing_util = HashSignatureUtility(auth_key)
-
-    def generate_cookie(self) -> str:
-        """
-        Generate a consent cookie string.
-        
+        :param auth_key: Authentication key for hashing
         :return: Consent cookie string
         """
         # Create a dictionary with the consent data
         consent_data = {
-            "application_id": self.application_id,
-            "redirect_uri": self.redirect_uri,
-            "scopes": self.scopes,
-            "expires_on": self.cookie_max_age
+            "application_id": application_id,
+            "redirect_uri": redirect_uri,
+            "scopes": scopes,
+            "expires_on": cookie_max_age
         }
         
-        signature = self.hashing_util.generate_hash(consent_data)
+        hashing_util = HashSignatureUtility(auth_key)
+        signature = hashing_util.generate_hash(consent_data)
         consent_data['signature'] = signature
         # Convert to JSON and encode as base64
         consent_json = json.dumps(consent_data)
