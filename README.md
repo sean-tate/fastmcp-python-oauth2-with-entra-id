@@ -118,7 +118,7 @@ sequenceDiagram
         MS->>EA: Authorize with server credentials
         EA->>U: Present consent screen
         U->>EA: Authenticate & consent
-        EA->>U: Set consent cookie in browser
+        EA->>U: Set session cookie in browser
         EA->>MS: Return authorization code
         MS->>LC: Complete legitimate connection
     end
@@ -137,7 +137,7 @@ sequenceDiagram
         MA->>U: Send crafted link (phishing/social engineering)
         U->>MS: Click link - redirected to OAuth endpoint
         MS->>EA: Start OAuth flow with malicious client_id
-        Note over EA: Existing consent cookie found!<br/>No new consent required
+        Note over EA: Existing session cookie found!<br/>No new consent required
         EA->>MS: Auto-approve & return auth code
         MS->>MC: Redirect to malicious client's redirect_uri
         MC->>MA: Malicious client receives tokens
@@ -152,7 +152,7 @@ sequenceDiagram
 
 Consider this scenario:
 - A legitimate user connects their MCP client to your server and consents to Entra ID access
-- Entra ID stores a consent cookie in the user's browser for future authentications
+- Entra ID stores a session cookie in the user's browser for future authentications
 - A malicious actor uses your server's dynamic client registration to register their own client
 - The malicious actor crafts a link using their registered client_id and redirect_uri
 
@@ -165,7 +165,7 @@ http://your-mcp-server.com/auth/authorize?response_type=code&client_id=malicious
 
 - When the legitimate user clicks the malicious link:
   - They're redirected through your MCP server's OAuth flow
-  - Entra ID finds the existing consent cookie and auto-approves without showing a consent screen
+  - Entra ID finds the existing session cookie and auto-approves without showing a consent screen
   - The authorization code gets sent to the malicious actor's registered redirect URI (`https://evil-actor.com/callback`)
   - The malicious actor gains access tokens with your server's scope and permissions
 
