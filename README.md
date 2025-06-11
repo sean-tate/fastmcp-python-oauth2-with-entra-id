@@ -23,12 +23,15 @@ This simple tool demonstrates the complete OAuth2 flow from authentication throu
 
 ## Environment Setup
 
+Create an Entra App registration and enable public client flows.
+
+![alt text](assets/public-client-flows.png)
+
 Create a `.env` file in the project root with the following variables:
 
 ```
 AUTH_TENANT_ID=your-tenant-id
 AUTH_CLIENT_ID=your-client-id
-AUTH_CLIENT_SECRET=your-client-secret
 # Optional:
 # AUTH_AUTHORITY=login.microsoftonline.com
 # AUTH_REDIRECT_URI=http://localhost:8000/auth/callback
@@ -36,7 +39,6 @@ AUTH_CLIENT_SECRET=your-client-secret
 
 - `AUTH_TENANT_ID`: Your Entra ID (Azure AD) tenant ID
 - `AUTH_CLIENT_ID`: The client/application ID registered in Entra ID
-- `AUTH_CLIENT_SECRET`: The client secret (for confidential clients)
 - `AUTH_REDIRECT_URI`: Redirect URI for the MCP server (default: `http://localhost:8000/auth/callback`)
 
 ## How to Run the Demo
