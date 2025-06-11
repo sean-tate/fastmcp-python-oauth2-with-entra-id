@@ -115,7 +115,7 @@ sequenceDiagram
         Note over U,EA: Phase 1: Legitimate User Setup
         U->>LC: Connect MCP client to server
         LC->>MS: Initiate OAuth flow
-        MS->>EA: Authorize with server credentials
+        MS->>EA: Authorize with server
         EA->>U: Present consent screen
         U->>EA: Authenticate & consent
         EA->>U: Set session cookie in browser
@@ -203,7 +203,7 @@ The consent screen protection is enforced through a sophisticated cookie-based v
    - **No Valid Cookie:** User is redirected to the consent screen first
 
 **Security Benefits:**
-- **Prevents Replay Attacks:** Each consent cookie is tied to specific client credentials
+- **Prevents Replay Attacks:** Each consent cookie is tied to a specific dynamically registered (MCP) client
 - **Tamper-Proof:** Cryptographic signatures prevent malicious modification
 - **Time-Bound:** Cookies expire, requiring periodic re-consent
 - **Scope-Specific:** Consent is granular to the exact permissions requested
