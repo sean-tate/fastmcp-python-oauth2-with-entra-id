@@ -30,14 +30,12 @@ class EntraIDOAuthProvider(
         self,
         tenant_id: str,
         client_id: str,
-        client_secret: str,
         redirect_uri: str,
         scope: Scope = Scope("user.read"),
     ):
         logger.debug("EntraIDOAuthProvider.__init__ called")
         self.tenant_id = tenant_id
         self.client_id = client_id
-        self.client_secret = client_secret
         self.redirect_uri = redirect_uri
         self.authority = f"https://login.microsoftonline.com/{tenant_id}/"
         self.token_endpoint = f"{self.authority}/oauth2/v2.0/token"
@@ -215,7 +213,6 @@ class EntraIDOAuthProvider(
             "code": code,
             "redirect_uri": self.redirect_uri,
             "grant_type": "authorization_code",
-            "client_secret": self.client_secret,
             "code_verifier": state_data[
                 "code_verifier"
             ],  # PKCE: code_verifier, internally generated uring authorize redirect

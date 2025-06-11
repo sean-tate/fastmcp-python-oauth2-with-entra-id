@@ -13,7 +13,6 @@ class EntraIdAuthSettings(BaseSettings):
     auth_authority: str = "login.microsoftonline.com"  # AZURE_CHINA = "login.chinacloudapi.cn", AZURE_GERMANY = "login.microsoftonline.de", AZURE_GOVERNMENT = "login.microsoftonline.us", AZURE_PUBLIC_CLOUD = "login.microsoftonline.com"
     auth_tenant_id: str
     auth_client_id: str
-    auth_client_secret: str = ""  # This should be set in the environment or .env file
     auth_redirect_uri: str = "http://localhost:8000/auth/callback"  # This should be the redirect URI of your this MCP server
     AUTH_VERSION: ClassVar[str] = "v2.0"
 

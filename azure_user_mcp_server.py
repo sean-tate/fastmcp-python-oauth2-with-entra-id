@@ -23,7 +23,6 @@ target_scope = Scope("user.read")
 entra_auth = EntraIDOAuthProvider(
     tenant_id=auth_settings.auth_tenant_id,
     client_id=auth_settings.auth_client_id,
-    client_secret=auth_settings.auth_client_secret,
     redirect_uri=auth_settings.auth_redirect_uri,
     scope=target_scope,
 )
