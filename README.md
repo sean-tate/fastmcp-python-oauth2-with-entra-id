@@ -86,9 +86,9 @@ MCP Inspector is a graphical tool for interacting with MCP servers.
 
 ## Notes
 
-- **Azure Application Registration Required:** Before running this demo, you must create an application registration in Microsoft Entra ID (Azure AD). This registration provides the `AUTH_CLIENT_ID`, `AUTH_CLIENT_SECRET`, and `AUTH_TENANT_ID` values needed in your `.env` file.
+- **Azure Application Registration Required:** Before running this demo, you must create an application registration in Microsoft Entra ID (Azure AD). This registration provides the `AUTH_CLIENT_ID` and `AUTH_TENANT_ID` values needed in your `.env` file.
 
-- **Setup Instructions:** For detailed steps on creating an application registration, configuring redirect URIs, and generating client secrets, follow the official Microsoft documentation: [Register an application with Microsoft identity platform](https://docs.microsoft.com/en-us/azure/active-directory/develop/quickstart-register-app)
+- **Setup Instructions:** For detailed steps on creating an application registration and configuring redirect URIs follow the official Microsoft documentation: [Register an application with Microsoft identity platform](https://docs.microsoft.com/en-us/azure/active-directory/develop/quickstart-register-app)
 
 - **Redirect URI Configuration:** Ensure your application registration includes `http://localhost:8000/auth/callback` as a valid redirect URI in the authentication settings.
 
