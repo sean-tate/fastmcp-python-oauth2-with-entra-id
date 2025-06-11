@@ -23,7 +23,7 @@ This simple tool demonstrates the complete OAuth2 flow from authentication throu
 
 ## Environment Setup
 
-Create an Entra App registration and enable public client flows.
+Create an Entra App registration and enable public client flows in the `Authentication` options. This ensures the server doesn't require secrets when doing the token exchange.
 
 ![alt text](assets/public-client-flows.png)
 
@@ -52,13 +52,13 @@ AUTH_CLIENT_ID=your-client-id
 2. **Start the MCP Server:**
    From the project root, run:
    ```bash
-    uv run azure_user_mcp_server.py
+   make start-server
    ```
 
 3. **Run the OAuth2 Console Client:**
    In a new terminal, from the project root, run:
    ```bash
-     uv run simple_oauth_client_example.py
+   make start-client
    ```
    The client will:
    - Attempt to access the protected resource (expecting 401)
