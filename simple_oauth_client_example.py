@@ -50,15 +50,13 @@ class CallbackHandler(BaseHTTPRequestHandler):
         """Initialize with callback data storage."""
         self.callback_data = callback_data
         print("CallbackHandler initialized with callback data storage")
-  
+
         super().__init__(request, client_address, server)
 
     def do_GET(self):
         """Handle GET request from OAuth redirect."""
         parsed = urlparse(self.path)
         query_params = parse_qs(parsed.query)
-
-              
 
         if "code" in query_params:
             # Store the authorization code and state in callback data
@@ -67,7 +65,8 @@ class CallbackHandler(BaseHTTPRequestHandler):
             self.send_response(200)
             self.send_header("Content-type", "text/html")
             self.end_headers()
-            self.wfile.write(b"""
+            self.wfile.write(
+                b"""
             <html>
             <body>
                 <h1>Authorization Successful!</h1>
@@ -75,7 +74,8 @@ class CallbackHandler(BaseHTTPRequestHandler):
                 <script>setTimeout(() => window.close(), 2000);</script>
             </body>
             </html>
-            """)
+            """
+            )
         elif "error" in query_params:
             self.callback_data["error"] = query_params["error"][0]
             self.send_response(400)
@@ -195,9 +195,7 @@ class SimpleAuthClient:
             # Create OAuth authentication handler using the new interface
             oauth_auth = OAuthClientProvider(
                 server_url=self.server_url.replace("/mcp", ""),
-                client_metadata=OAuthClientMetadata.model_validate(
-                    client_metadata_dict
-                ),
+                client_metadata=OAuthClientMetadata.model_validate(client_metadata_dict),
                 storage=InMemoryTokenStorage(),
                 redirect_handler=_default_redirect_handler,
                 callback_handler=callback_handler,
@@ -329,9 +327,7 @@ class SimpleAuthClient:
                     await self.call_tool(tool_name, arguments)
 
                 else:
-                    print(
-                        "❌ Unknown command. Try 'list', 'call <tool_name>', or 'quit'"
-                    )
+                    print("❌ Unknown command. Try 'list', 'call <tool_name>', or 'quit'")
 
             except KeyboardInterrupt:
                 print("\n\n👋 Goodbye!")

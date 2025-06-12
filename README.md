@@ -23,12 +23,17 @@ This simple tool demonstrates the complete OAuth2 flow from authentication throu
 
 ## Environment Setup
 
+Create an Entra App registration and enable public client flows in the `Authentication` options. This ensures the server doesn't require secrets when doing the token exchange.
+
+![App registration](assets/app-registration.png)
+  - Set `http://localhost:8000/auth/callback` as a the redirect URI.
+![Public client flow](assets/public-client-flows.png)
+
 Create a `.env` file in the project root with the following variables:
 
 ```
 AUTH_TENANT_ID=your-tenant-id
 AUTH_CLIENT_ID=your-client-id
-AUTH_CLIENT_SECRET=your-client-secret
 # Optional:
 # AUTH_AUTHORITY=login.microsoftonline.com
 # AUTH_REDIRECT_URI=http://localhost:8000/auth/callback
@@ -36,7 +41,6 @@ AUTH_CLIENT_SECRET=your-client-secret
 
 - `AUTH_TENANT_ID`: Your Entra ID (Azure AD) tenant ID
 - `AUTH_CLIENT_ID`: The client/application ID registered in Entra ID
-- `AUTH_CLIENT_SECRET`: The client secret (for confidential clients)
 - `AUTH_REDIRECT_URI`: Redirect URI for the MCP server (default: `http://localhost:8000/auth/callback`)
 
 ## How to Run the Demo
@@ -50,13 +54,13 @@ AUTH_CLIENT_SECRET=your-client-secret
 2. **Start the MCP Server:**
    From the project root, run:
    ```bash
-    uv run azure_user_mcp_server.py
+   make start-server
    ```
 
 3. **Run the OAuth2 Console Client:**
    In a new terminal, from the project root, run:
    ```bash
-     uv run simple_oauth_client_example.py
+   make start-client
    ```
    The client will:
    - Attempt to access the protected resource (expecting 401)
@@ -84,9 +88,9 @@ MCP Inspector is a graphical tool for interacting with MCP servers.
 
 ## Notes
 
-- **Azure Application Registration Required:** Before running this demo, you must create an application registration in Microsoft Entra ID (Azure AD). This registration provides the `AUTH_CLIENT_ID`, `AUTH_CLIENT_SECRET`, and `AUTH_TENANT_ID` values needed in your `.env` file.
+- **Azure Application Registration Required:** Before running this demo, you must create an application registration in Microsoft Entra ID (Azure AD). This registration provides the `AUTH_CLIENT_ID` and `AUTH_TENANT_ID` values needed in your `.env` file.
 
-- **Setup Instructions:** For detailed steps on creating an application registration, configuring redirect URIs, and generating client secrets, follow the official Microsoft documentation: [Register an application with Microsoft identity platform](https://docs.microsoft.com/en-us/azure/active-directory/develop/quickstart-register-app)
+- **Setup Instructions:** For detailed steps on creating an application registration and configuring redirect URIs follow the official Microsoft documentation: [Register an application with Microsoft identity platform](https://docs.microsoft.com/en-us/azure/active-directory/develop/quickstart-register-app)
 
 - **Redirect URI Configuration:** Ensure your application registration includes `http://localhost:8000/auth/callback` as a valid redirect URI in the authentication settings.
 
