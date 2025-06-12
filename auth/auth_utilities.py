@@ -5,17 +5,21 @@ import secrets
 import json
 import time
 
+
 def generate_code_verifier():
     """Generate a cryptographically random code verifier."""
     return secrets.token_urlsafe(64)  # Generates a URL-safe random string
 
+
 def generate_code_challenge(code_verifier):
     """Generate the code challenge using SHA-256 encoding."""
     sha256_hash = hashlib.sha256(code_verifier.encode()).digest()
-    return base64.urlsafe_b64encode(sha256_hash).rstrip(b'=').decode()
+    return base64.urlsafe_b64encode(sha256_hash).rstrip(b"=").decode()
+
 
 class Scope:
     """Class to represent a set of scopes."""
+
     def __init__(self, scopes: str):
         """
         :param scopes: Space-separated string of scopes (e.g., "user.read email profile")
