@@ -25,7 +25,9 @@ This simple tool demonstrates the complete OAuth2 flow from authentication throu
 
 Create an Entra App registration and enable public client flows in the `Authentication` options. This ensures the server doesn't require secrets when doing the token exchange.
 
-![alt text](assets/public-client-flows.png)
+![App registration](assets/app-registration.png)
+  - Set `http://localhost:8000/auth/callback` as a the redirect URI.
+![Public client flow](assets/public-client-flows.png)
 
 Create a `.env` file in the project root with the following variables:
 
